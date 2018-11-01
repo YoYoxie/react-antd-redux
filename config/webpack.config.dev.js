@@ -30,7 +30,6 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
-const lessRegex = /\.(css|less)$/;
 
 // common function to get style loaders
 const getStyleLoaders = (cssOptions, preProcessor) => {
@@ -295,12 +294,24 @@ module.exports = {
           // Adds support for CSS Modules, but using SASS
           // using the extension .module.scss or .module.sass
           {
-            test: lessRegex, //  这里加上less
+            test: /\.less$/,
+            exclude: [/node_modules/],
             use: [
+              require.resolve('style-loader'),
               {
-                loader: require.resolve('less-loader') // 配置less-loader
-              }
-            ]
+                loader: require.resolve('css-loader'),
+                options: {
+                  modules: true,
+                  localIdentName: '[local]'
+                },
+              },
+              {
+                loader: require.resolve('less-loader'), // compiles Less to CSS
+                options: {
+                  javascriptEnabled: true,
+                }
+              },
+            ],
           },
           {
             test: sassModuleRegex,
